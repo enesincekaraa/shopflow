@@ -1,6 +1,8 @@
 package com.shopflow.service;
 
 import com.shopflow.dto.OrderRequest;
+import com.shopflow.exception.BadRequestException;
+import com.shopflow.exception.ResourceNotFoundException;
 import com.shopflow.model.*;
 import com.shopflow.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -20,12 +22,12 @@ public class OrderService {
     @Transactional
     public Order createOrder(OrderRequest request) {
         Customer customer = customerRepository.findById(request.getCustomerId())
-                .orElseThrow(() -> new RuntimeException("Müşteri bulunamadı"));
+                .orElseThrow(() -> new ResourceNotFoundException("Müşteri bulunamadı"));
 
         List<Product> products = productRepository.findAllById(request.getProductIds());
 
         if (products.isEmpty()) {
-            throw new RuntimeException("Hiç ürün bulunamadı");
+            throw new BadRequestException("Geçerli ürün bulunamadı");
         }
 
         BigDecimal total = products.stream()
@@ -48,7 +50,7 @@ public class OrderService {
     @Transactional
     public Order updateOrderStatus(Long orderId, OrderStatus status) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Sipariş bulunamadı"));
+                .orElseThrow(() -> new ResourceNotFoundException("Sipariş bulunamadı"));
         order.setStatus(status);
         return orderRepository.save(order);
     }

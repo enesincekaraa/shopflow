@@ -1,5 +1,6 @@
 package com.shopflow.service;
 
+import com.shopflow.exception.ResourceNotFoundException;
 import com.shopflow.model.Product;
 import com.shopflow.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -7,7 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor   // Lombok: constructor injection otomatik
+@RequiredArgsConstructor
 public class ProductService {
 
     private final ProductRepository productRepository;
@@ -18,7 +19,7 @@ public class ProductService {
 
     public Product getProductById(Long id) {
         return productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Ürün bulunamadı: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Ürün bulunamadı: " + id));
     }
 
     public Product createProduct(Product product) {
