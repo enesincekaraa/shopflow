@@ -2,6 +2,8 @@ package com.shopflow.service;
 
 import com.shopflow.dto.CustomerRequest;
 import com.shopflow.dto.CustomerResponse;
+import com.shopflow.exception.DuplicateResourceException;
+import com.shopflow.exception.ResourceNotFoundException;
 import com.shopflow.model.Customer;
 import com.shopflow.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +20,7 @@ public class CustomerService {
 
     public CustomerResponse createCustomer(CustomerRequest req) {
         if (customerRepository.existsByEmail(req.getEmail())) {
-            throw new RuntimeException("Bu email zaten kayıtlı: " + req.getEmail());
+            throw new DuplicateResourceException("Bu email zaten kayıtlı: " + req.getEmail());
         }
         Customer customer = new Customer();
         customer.setName(req.getName());
@@ -36,7 +38,7 @@ public class CustomerService {
 
     public CustomerResponse getCustomerById(Long id) {
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Müşteri bulunamadı: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Müşteri bulunamadı: " + id));
         return toResponse(customer);
     }
 
